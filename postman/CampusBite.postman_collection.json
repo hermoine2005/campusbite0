@@ -1,0 +1,293 @@
+{
+ "info": {
+  "name": "CampusBite API",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+ },
+ "variable": [
+  {
+   "key": "base",
+   "value": "http://localhost:5000/api"
+  },
+  {
+   "key": "token",
+   "value": ""
+  },
+  {
+   "key": "foodId",
+   "value": ""
+  },
+  {
+   "key": "orderId",
+   "value": ""
+  }
+ ],
+ "item": [
+  {
+   "name": "Register",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": "{{base}}/auth/register",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"name\": \"Test Student\",\n  \"email\": \"test@student.com\",\n  \"prn\": \"PRN12345\",\n  \"department\": \"CSE\",\n  \"year\": 3,\n  \"password\": \"Test1234\"\n}"
+    }
+   }
+  },
+  {
+   "name": "Register - weak password (expect 400)",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": "{{base}}/auth/register",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"name\": \"A\",\n  \"email\": \"a@b.com\",\n  \"prn\": \"PRN99999\",\n  \"department\": \"CSE\",\n  \"year\": 3,\n  \"password\": \"abc\"\n}"
+    }
+   }
+  },
+  {
+   "name": "Login (copy token into variable)",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": "{{base}}/auth/login",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"email\": \"test@student.com\",\n  \"password\": \"Test1234\"\n}"
+    }
+   }
+  },
+  {
+   "name": "Login - wrong password (expect 401)",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": "{{base}}/auth/login",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"email\": \"test@student.com\",\n  \"password\": \"wrong\"\n}"
+    }
+   }
+  },
+  {
+   "name": "Get menu",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": "{{base}}/food"
+   }
+  },
+  {
+   "name": "Create food as student (expect 403)",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/food",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"name\": \"X\",\n  \"category\": \"Snacks\",\n  \"price\": 10,\n  \"stock\": 5\n}"
+    }
+   }
+  },
+  {
+   "name": "Checkout",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/orders",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"items\": [\n    {\n      \"foodId\": \"{{foodId}}\",\n      \"qty\": 2\n    }\n  ],\n  \"pickupTime\": \"PUT_ISO_TIME_30_MIN_FROM_NOW\",\n  \"requestKey\": \"abc-1\"\n}"
+    }
+   }
+  },
+  {
+   "name": "My orders",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/orders/mine"
+   }
+  },
+  {
+   "name": "Order by invalid id (expect 400)",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/orders/123"
+   }
+  },
+  {
+   "name": "Cancel order",
+   "request": {
+    "method": "PATCH",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/orders/{{orderId}}/cancel"
+   }
+  },
+  {
+   "name": "ADMIN login",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": "{{base}}/auth/login",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"email\": \"admin@campusbite.com\",\n  \"password\": \"Admin@12345\"\n}"
+    }
+   }
+  },
+  {
+   "name": "ADMIN create food",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/food",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"name\": \"Test Item\",\n  \"category\": \"Snacks\",\n  \"price\": 20,\n  \"stock\": 10\n}"
+    }
+   }
+  },
+  {
+   "name": "ADMIN all orders",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/orders/admin/all"
+   }
+  },
+  {
+   "name": "ADMIN stats",
+   "request": {
+    "method": "GET",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/orders/admin/stats"
+   }
+  },
+  {
+   "name": "ADMIN update status",
+   "request": {
+    "method": "PATCH",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     },
+     {
+      "key": "Authorization",
+      "value": "Bearer {{token}}"
+     }
+    ],
+    "url": "{{base}}/orders/admin/{{orderId}}/status",
+    "body": {
+     "mode": "raw",
+     "raw": "{\n  \"status\": \"Confirmed\"\n}"
+    }
+   }
+  }
+ ]
+}
